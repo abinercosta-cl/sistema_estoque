@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db'); // Importa o pool de conexões do arquivo db.js
+const produtosRouter = require('./routes/produtos');
 
 // 2. CONFIGURAÇÕES INICIAIS - Criamos nossa aplicação Express
 const app = express();
@@ -37,6 +38,8 @@ app.get('/test-db', async (req, res) => {
         });
     }
 })
+
+app.use('/produtos', produtosRouter); // Conecta o roteador de produtos a aplicação
 
 // 5. INICIANDO O SERVIDOR - Colocamos o servidor para escutar na porta definida
 app.listen(PORT, () => {
