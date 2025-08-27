@@ -35,5 +35,34 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Rota para atualizar um produto existente - UPDATE
+// PUT http://localhost:3001/produtos/:id
+router.put('/:id', async (req, res) => {
+    const { id } = req.params; //pega o ID da URL
+    const { nome, codigo_barras, preco_venda, preco_custo, quantidade_estoque } = req.body; //pega os dados do corpo da requisição
+
+    //validação
+    if (!nome || !codigo_barras || !preco_venda || !preco_custo || !quantidade_estoque) {
+        return res.status(400).json({ error: 'Nome, código de barras, preço de vendas, preço de custo e quantidade em estoque são obrigatórios' });
+    }
+    try {
+        const updatedProduct = await pool.query(
+            'UPDATE produtos SET nome=$1, codigo_barras=$2, preco_venda=$3, preco_custo=$4, quantidade_estoque=$5 WHERE id=$6 RETURNING *',
+            [nome, codigo_barras, preco_venda, preco_custo, quantidade_estoque, id]
+        );
+
+        //Verificar se o produto foi encontrado e atualizado
+        if (updatedProduct.rows.length === 0) {
+            return res.status(404).json({ error: 'Produto não encontrado' });
+        }
+        res.json(updatedProduct.rows[0]);
+    } catch (error) {
+        if (error.code === "23505") {
+            return res.status(400).json({ error: "Codigo de barras já cadastrado." });
+        }
+        res.status(500).json({ error: error.message });
+    }
+})
+
 module.exports = router;
 // Agora, podemos usar esse roteador no nosso arquivo principal index.js
