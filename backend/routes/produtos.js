@@ -69,7 +69,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params; //pega o ID da URL
 
     try {
-        const deletedProduct = await.pool.query(
+        const deletedProduct = await pool.query(
             'DELETE FROM produtos WHERE id=$1 RETURNING *',
             [id]
         );
