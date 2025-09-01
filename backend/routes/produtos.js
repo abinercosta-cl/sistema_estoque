@@ -62,7 +62,27 @@ router.put('/:id', async (req, res) => {
         }
         res.status(500).json({ error: error.message });
     }
-})
+});
+
+// Rota para deletar um produto - DELETE
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params; //pega o ID da URL
+
+    try {
+        const deletedProduct = await.pool.query(
+            'DELETE FROM produtos WHERE id=$1 RETURNING *',
+            [id]
+        );
+        //Verificar se o produto foi encontrado e deletado
+        if (deletedProduct.rowsCount === 0) {
+            return res.status(404).json({ error: 'Produto não encontrado' });
+        }
+
+        res.status(200).json({ message: 'Produto deletado com sucesso' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 module.exports = router;
 // Agora, podemos usar esse roteador no nosso arquivo principal index.js
